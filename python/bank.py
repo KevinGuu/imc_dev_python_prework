@@ -1,10 +1,10 @@
 import csv
+import os.path
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import List
 from uuid import UUID, uuid4
-import os.path
 
 
 class TransactionType(Enum):
@@ -105,7 +105,7 @@ class Bank:
         # check if account has sufficient balance
         if from_account_object.balance < amount:
             raise ValueError(
-                f"{from_account}'s balance: ${from_account_object.balance} is less than the requested amount: ${amount}"
+                f"               {from_account:}'s balance: ${from_account_object.balance} is less than the requested amount: ${amount}"
             )
 
         timestamp = datetime.now()
@@ -114,30 +114,30 @@ class Bank:
         self.withdraw(from_account, amount)
         self.deposit(to_account, amount)
 
-        # add transaction to lists
-        from_account_object.transactions.append(
-            Transaction(
-                timestamp, TransactionType.DEBIT, amount, from_account, to_account
-            )
-        )
-        to_account_object.transactions.append(
-            Transaction(
-                timestamp, TransactionType.CREDIT, amount, from_account, to_account
-            )
-        )
-
-        # write transactions to file, open in "append" mode
-        with open(self.transactions_file_name, "a", newline="") as file:
-            csv_writer = csv.writer(file)
-
-            # from_account
-            csv_writer.writerow(
-                [timestamp, from_account, "", amount, from_account_object.balance]
-            )
-            # to_account
-            csv_writer.writerow(
-                [timestamp, to_account, amount, "", to_account_object.balance]
-            )
+        # # add transaction to lists
+        # from_account_object.transactions.append(
+        #     Transaction(
+        #         timestamp, TransactionType.DEBIT, amount, from_account, to_account
+        #     )
+        # )
+        # to_account_object.transactions.append(
+        #     Transaction(
+        #         timestamp, TransactionType.CREDIT, amount, from_account, to_account
+        #     )
+        # )
+        #
+        # # write transactions to file, open in "append" mode
+        # with open(self.transactions_file_name, "a", newline="") as file:
+        #     csv_writer = csv.writer(file)
+        #
+        #     # from_account
+        #     csv_writer.writerow(
+        #         [timestamp, from_account, "", amount, from_account_object.balance]
+        #     )
+        #     # to_account
+        #     csv_writer.writerow(
+        #         [timestamp, to_account, amount, "", to_account_object.balance]
+        #     )
 
     def find_inactive_accounts(self, count: int = 10) -> str:
         """Finds and returns accounts with transactions less than the given argument."""
@@ -145,4 +145,4 @@ class Bank:
         accounts = filter(
             lambda acc: len(acc.transactions) < count, self.ledger.values()
         )
-        return f"{len(list(accounts)):} have less than {count} transactions."
+        return f"{len(list(accounts))} have less than {count} transactions."
